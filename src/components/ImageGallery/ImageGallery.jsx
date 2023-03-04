@@ -6,6 +6,7 @@ import { ImageGalleryList } from './ImageGallery.styled';
 import { ErrorMessage } from 'components/ErrorMessage/ErrorMessage';
 import { Button } from 'components/Button/Button';
 import { Loader } from 'components/Loader/Loader';
+import { Modal } from 'components/Modal/Modal';
 
 import * as API from '../../services/image-api';
 
@@ -16,6 +17,8 @@ export class ImageGallery extends Component {
     isLoading: false,
     page: 1,
     totalPages: 1,
+    isModalOpen: false,
+    image: null,
   };
 
   componentDidMount() {}
@@ -67,8 +70,25 @@ export class ImageGallery extends Component {
     this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
+  handleModalOpen = id => {
+    this.onModalOpen();
+
+    const image = this.state.images.find(image => image.id === Number(id));
+
+    this.setState({ image });
+  };
+
+  onModalOpen = () => {
+    this.setState({ isModalOpen: true });
+  };
+
+  onModalClose = () => {
+    this.setState({ isModalOpen: false });
+  };
+
   render() {
-    const { isLoading, images, status, totalPages, page } = this.state;
+    const { isLoading, images, status, totalPages, page, isModalOpen, image } =
+      this.state;
 
     if (status === 'rejected') {
       return <ErrorMessage />;
@@ -79,13 +99,20 @@ export class ImageGallery extends Component {
         <>
           <ImageGalleryList>
             {images.map(image => {
-              return <ImageGalleryItem key={image.id} item={image} />;
+              return (
+                <ImageGalleryItem
+                  key={image.id}
+                  item={image}
+                  onClick={this.handleModalOpen}
+                />
+              );
             })}
           </ImageGalleryList>
           {isLoading && <Loader />}
           {page < totalPages && images.length > 0 && isLoading === false && (
             <Button onClick={this.handleLoad} />
           )}
+          {isModalOpen && <Modal onClose={this.onModalClose} item={image} />}
         </>
       );
     }
