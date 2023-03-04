@@ -1,5 +1,5 @@
-import { SectionContainer } from './Container.styled';
+import { PageWrapper } from './Container.styled';
 
-export const Container = ({ children }) => {
-  return <SectionContainer>{children}</SectionContainer>;
+export const Layout = ({ children }) => {
+  return <PageWrapper>{children}</PageWrapper>;
 };
