@@ -39,24 +39,19 @@ export class App extends Component {
           return;
         }
 
-        if (prevState.searchQuery !== searchQuery) {
-          this.setState({
-            images: [...data.hits],
-            status: 'resolved',
-            totalPages: Math.ceil(data.totalHits / 12),
-          });
+        // if (prevState.searchQuery !== searchQuery) {
+        //   this.setState({
+        //     images: [...data.hits],
+        //     status: 'resolved',
+        //     totalPages: Math.ceil(data.totalHits / 12),
+        //   });
+        // }
 
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-          });
-          return;
-        }
-
-        this.setState({
+        this.setState(prevState => ({
           images: [...prevState.images, ...data.hits],
           status: 'resolved',
-        });
+          totalPages: Math.ceil(data.totalHits / 12),
+        }));
       } catch (error) {
         console.log(error);
       }
@@ -71,8 +66,8 @@ export class App extends Component {
       });
       return;
     }
-
-    this.setState({ searchQuery });
+    this.setState({ searchQuery, images: [], page: 1 });
+    this.pageScrollToTop();
   };
 
   handleLoad = () => {
@@ -80,11 +75,10 @@ export class App extends Component {
   };
 
   handleModalOpen = id => {
-    this.onModalOpen();
-
     const image = this.state.images.find(image => image.id === Number(id));
 
     this.setState({ image });
+    this.onModalOpen();
   };
 
   onModalOpen = () => {
@@ -94,6 +88,14 @@ export class App extends Component {
   onModalClose = () => {
     this.setState({ isModalOpen: false });
   };
+
+  pageScrollToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+    return;
+  }
 
   render() {
     const { images, status, totalPages, page, isModalOpen, image } = this.state;
